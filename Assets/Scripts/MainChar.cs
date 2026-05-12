@@ -6,7 +6,7 @@ public class MainChar : MonoBehaviour
 {
     public float MovementSpeed = 3;
 
-    private InputAction moveAction;
+    InputAction moveAction;
 
     void Start()
     {
