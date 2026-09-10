@@ -2,7 +2,7 @@
  * Spine Runtimes License Agreement
  * Last updated April 5, 2025. Replaces all prior versions.
  *
- * Copyright (c) 2013-2025, Esoteric Software LLC
+ * Copyright (c) 2013-2026, Esoteric Software LLC
  *
  * Integration of the Spine Runtimes into software or otherwise creating
  * derivative works of the Spine Runtimes is permitted under the terms and
@@ -50,7 +50,6 @@
 #if UNITY_2020_3_16_OR_NEWER || UNITY_2021_1_17_OR_NEWER || UNITY_2021_2_OR_NEWER
 #define HAS_SAVE_ASSET_IF_DIRTY
 #endif
-
 #define SPINE_OPTIONAL_ON_DEMAND_LOADING
 
 using System.Collections.Generic;
@@ -70,6 +69,7 @@ namespace Spine.Unity.Editor {
 #endif
 #if SPINE_OPTIONAL_ON_DEMAND_LOADING
 		static List<string> textureLoadersToRestore = new List<string>();
+		static Dictionary<Material, Texture> onDemandTexturesToRestoreAtMaterial = new Dictionary<Material, Texture>();
 #endif
 		static Dictionary<string, string> spriteAtlasTexturesToRestore = new Dictionary<string, string>();
 
@@ -81,6 +81,7 @@ namespace Spine.Unity.Editor {
 #endif
 #if SPINE_OPTIONAL_ON_DEMAND_LOADING
 			PreprocessOnDemandTextureLoaders();
+			PreprocessOnDemandMaterialAssets();
 #endif
 			PreprocessSpriteAtlases();
 		}
@@ -92,6 +93,7 @@ namespace Spine.Unity.Editor {
 				PostprocessSpinePrefabMeshes();
 #endif
 #if SPINE_OPTIONAL_ON_DEMAND_LOADING
+			PostprocessOnDemandMaterialAssets();
 			PostprocessOnDemandTextureLoaders();
 #endif
 			PostprocessSpriteAtlases();
@@ -201,6 +203,87 @@ namespace Spine.Unity.Editor {
 #endif
 				textureLoadersToRestore.Clear();
 
+			} finally {
+				BuildUtilities.IsInSkeletonAssetBuildPostProcessing = false;
+			}
+		}
+
+		internal static void PreprocessOnDemandMaterialAssets () {
+			BuildUtilities.IsInSkeletonAssetBuildPreProcessing = true;
+			try {
+				onDemandTexturesToRestoreAtMaterial.Clear();
+				if (!SpineEditorUtilities.Preferences.scanOnDemandMaterials || textureLoadersToRestore.Count == 0) return;
+
+				List<OnDemandTextureLoader> loaders = new List<OnDemandTextureLoader>(textureLoadersToRestore.Count);
+				foreach (string assetPath in textureLoadersToRestore) {
+					OnDemandTextureLoader loader = AssetDatabase.LoadAssetAtPath<OnDemandTextureLoader>(assetPath);
+					if (loader)
+						loaders.Add(loader);
+				}
+				if (loaders.Count == 0) return;
+
+				HashSet<string> materialAssetPaths = new HashSet<string>();
+				string[] materialAssetGuids = AssetDatabase.FindAssets("t:Material");
+				foreach (string materialAssetGuid in materialAssetGuids)
+					materialAssetPaths.Add(AssetDatabase.GUIDToAssetPath(materialAssetGuid));
+
+				AssetDatabase.StartAssetEditing();
+				try {
+					foreach (string assetPath in materialAssetPaths) {
+						UnityEngine.Object[] assets = AssetDatabase.LoadAllAssetsAtPath(assetPath);
+						foreach (UnityEngine.Object asset in assets) {
+							Material material = asset as Material;
+							if (!material || onDemandTexturesToRestoreAtMaterial.ContainsKey(material)) continue;
+
+							foreach (OnDemandTextureLoader loader in loaders) {
+								Texture targetTexture;
+								if (!loader.AssignPlaceholderTexture(material, out targetTexture)) continue;
+
+								onDemandTexturesToRestoreAtMaterial.Add(material, targetTexture);
+								EditorUtility.SetDirty(material);
+#if HAS_SAVE_ASSET_IF_DIRTY
+								AssetDatabase.SaveAssetIfDirty(material);
+#endif
+								break;
+							}
+						}
+					}
+				} finally {
+					AssetDatabase.StopAssetEditing();
+				}
+#if !HAS_SAVE_ASSET_IF_DIRTY
+				if (onDemandTexturesToRestoreAtMaterial.Count > 0)
+					AssetDatabase.SaveAssets();
+#endif
+			} finally {
+				BuildUtilities.IsInSkeletonAssetBuildPreProcessing = false;
+			}
+		}
+
+		internal static void PostprocessOnDemandMaterialAssets () {
+			BuildUtilities.IsInSkeletonAssetBuildPostProcessing = true;
+			try {
+				if (onDemandTexturesToRestoreAtMaterial.Count == 0) return;
+				AssetDatabase.StartAssetEditing();
+				try {
+					foreach (KeyValuePair<Material, Texture> pair in onDemandTexturesToRestoreAtMaterial) {
+						Material material = pair.Key;
+						if (!material) continue;
+
+						material.mainTexture = pair.Value;
+						EditorUtility.SetDirty(material);
+#if HAS_SAVE_ASSET_IF_DIRTY
+						AssetDatabase.SaveAssetIfDirty(material);
+#endif
+					}
+				} finally {
+					AssetDatabase.StopAssetEditing();
+				}
+#if !HAS_SAVE_ASSET_IF_DIRTY
+				if (onDemandTexturesToRestoreAtMaterial.Count > 0)
+					AssetDatabase.SaveAssets();
+#endif
+				onDemandTexturesToRestoreAtMaterial.Clear();
 			} finally {
 				BuildUtilities.IsInSkeletonAssetBuildPostProcessing = false;
 			}
