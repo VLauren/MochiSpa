@@ -1,3 +1,4 @@
+using Spine.Unity;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -19,11 +20,15 @@ public class MainChar : MonoBehaviour
 
     InputAction moveAction;
     InputAction jumpAction;
+    InputAction attackAction;
+    InputAction interactAction;
 
     void Start()
     {
         moveAction = InputSystem.actions.FindAction("Move");
         jumpAction = InputSystem.actions.FindAction("Jump");
+        attackAction = InputSystem.actions.FindAction("Attack");
+        interactAction = InputSystem.actions.FindAction("Interact");
     }
     void Update()
     {
@@ -32,8 +37,25 @@ public class MainChar : MonoBehaviour
         transform.Translate(movement);
 
         if (jumpAction.WasPressedThisFrame())
+        {
             if (CurrentInteractable != null)
                 CurrentInteractable.Action();
+
+            SkeletonAnimation skel = GameObject.FindAnyObjectByType<SkeletonAnimation>();
+            skel.AnimationName = "Station_color/Stn_color_empty";
+        }
+
+        if (attackAction.WasPressedThisFrame())
+        {
+            SkeletonAnimation skel = GameObject.FindAnyObjectByType<SkeletonAnimation>();
+            skel.AnimationName = "Station_start/Start_bowl_lvl_2";
+        }
+
+        if (interactAction.WasPressedThisFrame())
+        {
+            SkeletonAnimation skel = GameObject.FindAnyObjectByType<SkeletonAnimation>();
+            skel.AnimationName = "Station_color/Stn_color_working";
+        }
     }
 
     public static void SetPlayerInteractable(Interactable interactable)
