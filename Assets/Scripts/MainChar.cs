@@ -14,6 +14,8 @@ public class MainChar : MonoBehaviour
 {
     public static MainChar Instance { get; private set; }
 
+    PlayerState State = PlayerState.Normal;
+
     public float MovementSpeed = 3;
 
     Interactable CurrentInteractable;
@@ -22,6 +24,11 @@ public class MainChar : MonoBehaviour
     InputAction jumpAction;
     InputAction attackAction;
     InputAction interactAction;
+
+    void Awake()
+    {
+        Instance = this;
+    }
 
     void Start()
     {
@@ -40,22 +47,12 @@ public class MainChar : MonoBehaviour
         {
             if (CurrentInteractable != null)
                 CurrentInteractable.Action();
-
-            SkeletonAnimation skel = GameObject.FindAnyObjectByType<SkeletonAnimation>();
-            skel.AnimationName = "Station_color/Stn_color_empty";
         }
+    }
 
-        if (attackAction.WasPressedThisFrame())
-        {
-            SkeletonAnimation skel = GameObject.FindAnyObjectByType<SkeletonAnimation>();
-            skel.AnimationName = "Station_start/Start_bowl_lvl_2";
-        }
-
-        if (interactAction.WasPressedThisFrame())
-        {
-            SkeletonAnimation skel = GameObject.FindAnyObjectByType<SkeletonAnimation>();
-            skel.AnimationName = "Station_color/Stn_color_working";
-        }
+    public static PlayerState GetPlayerState()
+    {
+        return Instance.State;
     }
 
     public static void SetPlayerInteractable(Interactable interactable)
