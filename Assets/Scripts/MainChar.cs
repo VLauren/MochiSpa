@@ -64,4 +64,10 @@ public class MainChar : MonoBehaviour
     {
         Instance.CurrentInteractable = null;
     }
+
+    public static void StartMochiCarry()
+    {
+        Instance.State = PlayerState.Carrying;
+        Instance.transform.Find("mochi").gameObject.SetActive(true);
+    }
 }
