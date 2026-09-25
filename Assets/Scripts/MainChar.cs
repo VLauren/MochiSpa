@@ -70,4 +70,10 @@ public class MainChar : MonoBehaviour
         Instance.State = PlayerState.Carrying;
         Instance.transform.Find("mochi").gameObject.SetActive(true);
     }
+
+    public static void StopMochiCarry()
+    {
+        Instance.State = PlayerState.Normal;
+        Instance.transform.Find("mochi").gameObject.SetActive(false);
+    }
 }
