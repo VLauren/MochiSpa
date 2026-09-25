@@ -39,7 +39,7 @@ public class MotherDoughStation : Interactable
                 SkeletonAnimation skel = GetComponent<SkeletonAnimation>();
                 Spine.TrackEntry entry = skel.AnimationState.SetAnimation(0, "Station_start/Start_bowl_empty", false);
 
-                MainChar.StartMochiCarry();
+                MainChar.SetCarryState(PlayerState.Dough);
             }
         }
 

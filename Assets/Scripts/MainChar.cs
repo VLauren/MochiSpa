@@ -6,7 +6,8 @@ using UnityEngine.InputSystem;
 public enum PlayerState
 {
     Normal,
-    Carrying,
+    Dough,
+    Mochi,
     Pushing
 }
 
@@ -65,15 +66,25 @@ public class MainChar : MonoBehaviour
         Instance.CurrentInteractable = null;
     }
 
-    public static void StartMochiCarry()
+    public static void SetCarryState(PlayerState state)
     {
-        Instance.State = PlayerState.Carrying;
-        Instance.transform.Find("mochi").gameObject.SetActive(true);
-    }
-
-    public static void StopMochiCarry()
-    {
-        Instance.State = PlayerState.Normal;
-        Instance.transform.Find("mochi").gameObject.SetActive(false);
+        if(state == PlayerState.Dough)
+        {
+            Instance.State = PlayerState.Dough;
+            Instance.transform.Find("dough").gameObject.SetActive(true);
+            Instance.transform.Find("mochi").gameObject.SetActive(false);
+        }
+        else if(state == PlayerState.Mochi)
+        {
+            Instance.State = PlayerState.Dough;
+            Instance.transform.Find("dough").gameObject.SetActive(false);
+            Instance.transform.Find("mochi").gameObject.SetActive(true);
+        }
+        else
+        {
+            Instance.State = PlayerState.Normal;
+            Instance.transform.Find("dough").gameObject.SetActive(false);
+            Instance.transform.Find("mochi").gameObject.SetActive(false);
+        }
     }
 }
