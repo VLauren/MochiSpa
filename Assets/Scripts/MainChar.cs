@@ -76,7 +76,7 @@ public class MainChar : MonoBehaviour
         }
         else if(state == PlayerState.Mochi)
         {
-            Instance.State = PlayerState.Dough;
+            Instance.State = PlayerState.Mochi;
             Instance.transform.Find("dough").gameObject.SetActive(false);
             Instance.transform.Find("mochi").gameObject.SetActive(true);
         }
