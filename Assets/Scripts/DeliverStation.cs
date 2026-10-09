@@ -22,7 +22,7 @@ public class DeliverStation : Interactable
 
     public override void Action()
     {
-        if(CurrentState == States.Empty && MainChar.GetPlayerState() == PlayerState.Mochi)
+        if(CurrentState == States.Empty && MainChar.GetPlayerState() == PlayerState.Carry)
         {
             StartCoroutine(DeliverRoutine());
         }
@@ -33,7 +33,7 @@ public class DeliverStation : Interactable
     public IEnumerator DeliverRoutine()
     {
         CurrentState = States.Delivered;
-        MainChar.SetCarryState(PlayerState.Normal);
+        MainChar.SetPlayerState(PlayerState.Normal);
 
         transform.Find("mochi").gameObject.SetActive(true);
 

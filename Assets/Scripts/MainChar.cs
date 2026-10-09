@@ -6,9 +6,24 @@ using UnityEngine.InputSystem;
 public enum PlayerState
 {
     Normal,
-    Dough,
-    Mochi,
+    Carry,
     Pushing
+}
+
+public enum MochiState
+{
+    Dough,
+    Round,
+    Freezed,
+    Grilled
+}
+
+public enum MochiColour
+{
+    Regular,
+    Blue,
+    Red,
+    Yellow
 }
 
 public class MainChar : MonoBehaviour
@@ -16,6 +31,8 @@ public class MainChar : MonoBehaviour
     public static MainChar Instance { get; private set; }
 
     PlayerState State = PlayerState.Normal;
+    MochiState MochiState = MochiState.Dough;
+    MochiColour MochiColour = MochiColour.Regular;
 
     public float MovementSpeed = 3;
 
@@ -25,6 +42,8 @@ public class MainChar : MonoBehaviour
     InputAction jumpAction;
     InputAction attackAction;
     InputAction interactAction;
+
+    Vector2 movement = Vector2.zero;
 
     void Awake()
     {
@@ -40,7 +59,7 @@ public class MainChar : MonoBehaviour
     }
     void Update()
     {
-        Vector2 movement = moveAction.ReadValue<Vector2>();
+        movement = moveAction.ReadValue<Vector2>();
         movement *= Time.deltaTime * MovementSpeed;
         transform.Translate(movement);
 
@@ -49,11 +68,17 @@ public class MainChar : MonoBehaviour
             if (CurrentInteractable != null)
                 CurrentInteractable.Action();
         }
+
+        Instance.UpdateMochiAnimation();
     }
 
     public static PlayerState GetPlayerState()
     {
         return Instance.State;
+    }
+    public static MochiState GetMochiState()
+    {
+        return Instance.MochiState;
     }
 
     public static void SetPlayerInteractable(Interactable interactable)
@@ -66,25 +91,66 @@ public class MainChar : MonoBehaviour
         Instance.CurrentInteractable = null;
     }
 
-    public static void SetCarryState(PlayerState state)
+    public static void SetPlayerState(PlayerState state)
     {
-        if(state == PlayerState.Dough)
+        Instance.State = state;
+
+        if (state == PlayerState.Normal)
         {
-            Instance.State = PlayerState.Dough;
-            Instance.transform.Find("dough").gameObject.SetActive(true);
-            Instance.transform.Find("mochi").gameObject.SetActive(false);
+            Instance.transform.Find("Mochies").gameObject.SetActive(false);
         }
-        else if(state == PlayerState.Mochi)
+        else if (state == PlayerState.Carry)
         {
-            Instance.State = PlayerState.Mochi;
-            Instance.transform.Find("dough").gameObject.SetActive(false);
-            Instance.transform.Find("mochi").gameObject.SetActive(true);
+            Instance.transform.Find("Mochies").gameObject.SetActive(true);
         }
+        else if (state == PlayerState.Pushing)
+        {
+            // TODO
+        }
+
+        Instance.UpdateMochiAnimation();
+    }
+
+    public static void SetMochiState(MochiState state)
+    {
+        Instance.MochiState = state;
+        Instance.UpdateMochiAnimation();
+    }
+
+    public static void SetMochiColour(MochiColour state)
+    {
+        Instance.MochiColour = state;
+        Instance.UpdateMochiAnimation();
+    }
+
+    void UpdateMochiAnimation()
+    {
+        SkeletonAnimation skel = Instance.transform.Find("Mochies").GetComponent<SkeletonAnimation>();
+        string move = movement.sqrMagnitude > 0 ? "Mochis_run/Run" : "Mochis_idle/Idle";
+
+        string state;
+        if (MochiState == MochiState.Dough)
+            state = "_dough";
+        else if (MochiState == MochiState.Round)
+            state = "_round";
+        else if (MochiState == MochiState.Freezed)
+            state = "_round_freeze";
+        // if (MochiState == MochiState.Grilled)
         else
-        {
-            Instance.State = PlayerState.Normal;
-            Instance.transform.Find("dough").gameObject.SetActive(false);
-            Instance.transform.Find("mochi").gameObject.SetActive(false);
-        }
+            state = "_round_grilled";
+
+        string colour;
+        if (MochiColour == MochiColour.Regular)
+            colour = "";
+        else if (MochiColour == MochiColour.Blue)
+            colour = "_blue";
+        else if (MochiColour == MochiColour.Red)
+            colour = "_red";
+        // if (MochiColour == MochiColour.Yellow)
+        else
+            colour = "_yellow";
+
+        if(skel.AnimationName != (move + state + colour))
+            skel.AnimationState.SetAnimation(0, move + state + colour, true);
     }
 }

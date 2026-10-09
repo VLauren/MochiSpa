@@ -24,10 +24,10 @@ public class ColourStation : Interactable
 
     public override void Action()
     {
-        if(CurrentState == States.Empty && MainChar.GetPlayerState() == PlayerState.Dough)
+        if(CurrentState == States.Empty && MainChar.GetPlayerState() == PlayerState.Carry && MainChar.GetMochiState() == MochiState.Dough)
         {
             CurrentState = States.Select;
-            MainChar.SetCarryState(PlayerState.Normal);
+            MainChar.SetPlayerState(PlayerState.Normal);
 
             Anim.AnimationState.SetAnimation(0, "Station_color/Stn_color_select_blue", false);
         }
@@ -40,7 +40,9 @@ public class ColourStation : Interactable
         else if(CurrentState == States.Finished && MainChar.GetPlayerState() == PlayerState.Normal)
         {
             CurrentState = States.Empty;
-            MainChar.SetCarryState(PlayerState.Mochi);
+            MainChar.SetPlayerState(PlayerState.Carry);
+            MainChar.SetMochiState(MochiState.Round);
+            MainChar.SetMochiColour(MochiColour.Blue);
 
             Anim.AnimationState.SetAnimation(0, "Station_color/Stn_color_empty", false);
         }
