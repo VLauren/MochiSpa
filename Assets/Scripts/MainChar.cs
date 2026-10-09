@@ -126,7 +126,20 @@ public class MainChar : MonoBehaviour
     void UpdateMochiAnimation()
     {
         SkeletonAnimation skel = Instance.transform.Find("Mochies").GetComponent<SkeletonAnimation>();
-        string move = movement.sqrMagnitude > 0 ? "Mochis_run/Run" : "Mochis_idle/Idle";
+        string anim = GetMochiAnimationName();
+
+        if(skel.AnimationName != anim)
+            skel.AnimationState.SetAnimation(0, anim, true);
+    }
+
+    public static string GetMochiDeliverAnimation()
+    {
+        return Instance.GetMochiAnimationName(true);
+    }
+
+    string GetMochiAnimationName (bool _forceIdle = false)
+    {
+        string move = (!_forceIdle && movement.sqrMagnitude > 0) ? "Mochis_run/Run" : "Mochis_idle/Idle";
 
         string state;
         if (MochiState == MochiState.Dough)
@@ -140,7 +153,7 @@ public class MainChar : MonoBehaviour
             state = "_round_grilled";
 
         string colour;
-        if (MochiColour == MochiColour.Regular)
+        if (MochiColour == MochiColour.Regular || MochiState == MochiState.Dough)
             colour = "";
         else if (MochiColour == MochiColour.Blue)
             colour = "_blue";
@@ -150,7 +163,6 @@ public class MainChar : MonoBehaviour
         else
             colour = "_yellow";
 
-        if(skel.AnimationName != (move + state + colour))
-            skel.AnimationState.SetAnimation(0, move + state + colour, true);
+        return move + state + colour;
     }
 }

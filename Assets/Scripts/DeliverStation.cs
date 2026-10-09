@@ -35,12 +35,14 @@ public class DeliverStation : Interactable
         CurrentState = States.Delivered;
         MainChar.SetPlayerState(PlayerState.Normal);
 
-        transform.Find("mochi").gameObject.SetActive(true);
+        transform.Find("Mochies").gameObject.SetActive(true);
+        SkeletonAnimation skel = transform.Find("Mochies").GetComponent<SkeletonAnimation>();
+        skel.AnimationState.SetAnimation(0, MainChar.GetMochiDeliverAnimation(), true);
 
         yield return new WaitForSeconds(5);
 
         CurrentState = States.Empty;
-        transform.Find("mochi").gameObject.SetActive(false);
+        transform.Find("Mochies").gameObject.SetActive(false);
     }
 
 }
