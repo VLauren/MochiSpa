@@ -1,0 +1,85 @@
+using Spine.Unity;
+using System.Collections;
+using UnityEngine;
+
+public class RollStation : Interactable
+{
+    enum States
+    {
+        Empty,
+        Full,
+        Working,
+        Flat,
+        Filled,
+        Finished
+    }
+
+    States CurrentState = States.Empty;
+
+    SkeletonAnimation Anim;
+
+    void Start()
+    {
+        Anim = GetComponent<SkeletonAnimation>();
+    }
+
+    public override void Action()
+    {
+        if(CurrentState == States.Empty && MainChar.GetPlayerState() == PlayerState.Carry && MainChar.GetMochiState() == MochiState.Round)
+        {
+            CurrentState = States.Full;
+            MainChar.SetPlayerState(PlayerState.Normal);
+
+            Anim.AnimationState.SetAnimation(0, "Station_color/Stn_color_select_blue", false);
+        }
+        else if(CurrentState == States.Full)
+        {
+            CurrentState = States.Working;
+
+            StartCoroutine(Roll());
+        }
+        else if(CurrentState == States.Flat && MainChar.GetPlayerState() == PlayerState.Carry && MainChar.GetMochiState() == MochiState.Fill)
+        {
+            CurrentState = States.Filled;
+            MainChar.SetPlayerState(PlayerState.Normal);
+
+            Anim.AnimationState.SetAnimation(0, "Station_color/Stn_color_select_blue", false);
+        }
+        else if(CurrentState == States.Filled)
+        {
+            CurrentState = States.Working;
+
+            StartCoroutine(Close());
+        }
+        else if(CurrentState == States.Flat && MainChar.GetPlayerState() == PlayerState.Carry && MainChar.GetMochiState() == MochiState.Fill)
+        {
+            CurrentState = States.Empty;
+            MainChar.SetPlayerState(PlayerState.Carry);
+            MainChar.SetMochiState(MochiState.Round);
+            MainChar.SetMochiColour(MochiColour.Yellow);
+
+            Anim.AnimationState.SetAnimation(0, "Station_color/Stn_color_empty", false);
+        }
+
+        base.Action();
+    }
+
+    IEnumerator Roll()
+    {
+        Anim.AnimationState.SetAnimation(0, "Station_color/Stn_color_working", true);
+
+        yield return new WaitForSeconds(5);
+
+        CurrentState = States.Flat;
+        Anim.AnimationState.SetAnimation(0, "Station_color/Stn_color_finished_blue", false);
+    }
+    IEnumerator Close()
+    {
+        Anim.AnimationState.SetAnimation(0, "Station_color/Stn_color_working", true);
+
+        yield return new WaitForSeconds(5);
+
+        CurrentState = States.Finished;
+        Anim.AnimationState.SetAnimation(0, "Station_color/Stn_color_finished_blue", false);
+    }
+}

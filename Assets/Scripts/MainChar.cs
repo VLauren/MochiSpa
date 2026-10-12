@@ -15,7 +15,8 @@ public enum MochiState
     Dough,
     Round,
     Freezed,
-    Grilled
+    Grilled,
+    Fill
 }
 
 public enum MochiColour
