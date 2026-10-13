@@ -16,7 +16,8 @@ public enum MochiState
     Round,
     Freezed,
     Grilled,
-    Fill
+    Fill,
+    Beans
 }
 
 public enum MochiColour
@@ -140,10 +141,13 @@ public class MainChar : MonoBehaviour
 
     string GetMochiAnimationName (bool _forceIdle = false)
     {
-        string move = (!_forceIdle && movement.sqrMagnitude > 0) ? "Mochis_run/Run" : "Mochis_idle/Idle";
+        string type = MochiState == MochiState.Beans ? "Fills_" : "Mochis_";
+        string move = (!_forceIdle && movement.sqrMagnitude > 0) ? "run/Run" : "idle/Idle";
 
         string state;
-        if (MochiState == MochiState.Dough)
+        if (MochiState == MochiState.Beans)
+            state = "_fill_beans";
+        else if (MochiState == MochiState.Dough)
             state = "_dough";
         else if (MochiState == MochiState.Round)
             state = "_round";
@@ -154,7 +158,7 @@ public class MainChar : MonoBehaviour
             state = "_round_grilled";
 
         string colour;
-        if (MochiColour == MochiColour.Regular || MochiState == MochiState.Dough)
+        if (MochiColour == MochiColour.Regular || MochiState == MochiState.Dough || MochiState == MochiState.Beans)
             colour = "";
         else if (MochiColour == MochiColour.Blue)
             colour = "_blue";
@@ -164,6 +168,6 @@ public class MainChar : MonoBehaviour
         else
             colour = "_yellow";
 
-        return move + state + colour;
+        return type + move + state + colour;
     }
 }
