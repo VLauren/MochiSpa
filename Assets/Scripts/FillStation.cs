@@ -21,7 +21,7 @@ public class FillStation : Interactable
 
     IEnumerator Work()
     {
-        Anim.AnimationState.SetAnimation(0, "Station_fill/Stn_fill_beans_half", false);
+        Anim.AnimationState.SetAnimation(0, "Station_fill/Stn_fill_beans_empty", false);
 
         MainChar.SetPlayerState(PlayerState.Carry);
         MainChar.SetMochiState(MochiState.Beans);

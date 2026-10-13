@@ -65,7 +65,7 @@ public class MainChar : MonoBehaviour
         movement *= Time.deltaTime * MovementSpeed;
         transform.Translate(movement);
 
-        if (jumpAction.WasPressedThisFrame())
+        if (jumpAction.WasPressedThisFrame() || attackAction.WasPressedThisFrame() || interactAction.WasPressedThisFrame())
         {
             if (CurrentInteractable != null)
                 CurrentInteractable.Action();

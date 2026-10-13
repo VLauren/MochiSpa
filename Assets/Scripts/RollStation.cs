@@ -38,7 +38,7 @@ public class RollStation : Interactable
 
             StartCoroutine(Roll());
         }
-        else if(CurrentState == States.Flat)// && MainChar.GetPlayerState() == PlayerState.Carry && MainChar.GetMochiState() == MochiState.Fill)
+        else if(CurrentState == States.Flat && MainChar.GetPlayerState() == PlayerState.Carry && MainChar.GetMochiState() == MochiState.Beans)
         {
             CurrentState = States.Filled;
             MainChar.SetPlayerState(PlayerState.Normal);

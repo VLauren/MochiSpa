@@ -42,7 +42,7 @@ public class ColourStation : Interactable
             CurrentState = States.Empty;
             MainChar.SetPlayerState(PlayerState.Carry);
             MainChar.SetMochiState(MochiState.Round);
-            MainChar.SetMochiColour(MochiColour.Yellow);
+            MainChar.SetMochiColour(MochiColour.Blue);
 
             Anim.AnimationState.SetAnimation(0, "Station_color/Stn_color_empty", false);
         }
