@@ -186,14 +186,23 @@ public class MainChar : MonoBehaviour
 
     string GetCharacterAnimationName()
     {
-        string direction;
+        string movement, state, direction;
+
+        if (State == PlayerState.Carry)
+            state = "holding/";
+        else // if(State == PlayerState.Normal)
+            state = "empty/";
+
 
         if (Movement.magnitude / MovementSpeed < 0.2f)
         {
+            movement = "ch_idle_";
             direction = PreviousDirectionAnim;
         }
         else
         {
+            movement = "ch_run_";
+
             Vector2 normalizedMovement = Movement.normalized;
             if (normalizedMovement.x > 0.25f && normalizedMovement.y > 0.25f) // arriba derecha
                 direction = "ch_3_4_back_right";
@@ -215,6 +224,6 @@ public class MainChar : MonoBehaviour
             PreviousDirectionAnim = direction;
         }
 
-        return "ch_idle_empty/" + direction;
+        return movement + state + direction;
     }
 }
