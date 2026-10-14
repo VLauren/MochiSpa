@@ -15,8 +15,10 @@ public class DeliverStation : Interactable
 
     SkeletonAnimation Anim;
 
-    void Start()
+    protected override void Start()
     {
+        base.Start();
+
         Anim = GetComponent<SkeletonAnimation>();
     }
 

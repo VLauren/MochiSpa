@@ -6,8 +6,10 @@ public class FillStation : Interactable
 {
     SkeletonAnimation Anim;
 
-    void Start()
+    protected override void Start()
     {
+        base.Start();
+
         Anim = GetComponent<SkeletonAnimation>();
     }
 

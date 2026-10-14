@@ -28,7 +28,7 @@ public enum MochiColour
     Yellow
 }
 
-public class MainChar : MonoBehaviour
+public class MainChar : ZSortedObject
 {
     public static MainChar Instance { get; private set; }
 
@@ -55,9 +55,10 @@ public class MainChar : MonoBehaviour
     {
         Instance = this;
     }
-
-    void Start()
+    protected override void Start()
     {
+        base.Start();
+
         moveAction = InputSystem.actions.FindAction("Move");
         jumpAction = InputSystem.actions.FindAction("Jump");
         attackAction = InputSystem.actions.FindAction("Attack");
@@ -85,6 +86,8 @@ public class MainChar : MonoBehaviour
             CharacterAnim.AnimationState.SetAnimation(0, targetAnimName, true);
             CurrentAnimationName = targetAnimName;
         }
+
+        UpdateSortingOrder();
     }
 
     public static PlayerState GetPlayerState()

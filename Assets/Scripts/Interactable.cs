@@ -2,7 +2,7 @@ using System;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class Interactable : MonoBehaviour
+public class Interactable : ZSortedObject
 {
     public virtual void Action()
     {

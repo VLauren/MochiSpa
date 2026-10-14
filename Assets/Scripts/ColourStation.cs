@@ -17,8 +17,10 @@ public class ColourStation : Interactable
 
     SkeletonAnimation Anim;
 
-    void Start()
+    protected override void Start()
     {
+        base.Start();
+
         Anim = GetComponent<SkeletonAnimation>();
     }
 

@@ -12,11 +12,14 @@ public class MotherDoughStation : Interactable
     }
 
     States CurrentState = States.Empty;
-
-    void Start()
+    protected override void Start()
     {
+        base.Start();
+
         SkeletonAnimation skel = GetComponent<SkeletonAnimation>();
         skel.AnimationState.Event += OnAnimationEvent;
+
+        UpdateSortingOrder();
     }
     public override void Action()
     {

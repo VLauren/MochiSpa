@@ -18,8 +18,10 @@ public class RollStation : Interactable
 
     SkeletonAnimation Anim;
 
-    void Start()
+    protected override void Start()
     {
+        base.Start();
+
         Anim = GetComponent<SkeletonAnimation>();
     }
 
