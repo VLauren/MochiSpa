@@ -87,7 +87,9 @@ public class MainChar : ZSortedObject
             CurrentAnimationName = targetAnimName;
         }
 
-        UpdateSortingOrder();
+        int order = UpdateSortingOrder();
+        Instance.transform.Find("Mochies").GetComponent<Renderer>().sortingOrder = order + 1;
+
     }
 
     public static PlayerState GetPlayerState()

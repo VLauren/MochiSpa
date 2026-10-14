@@ -37,7 +37,10 @@ public class DeliverStation : Interactable
         CurrentState = States.Delivered;
         MainChar.SetPlayerState(PlayerState.Normal);
 
-        transform.Find("Mochies").gameObject.SetActive(true);
+        GameObject mochi = transform.Find("Mochies").gameObject;
+
+        mochi.SetActive(true);
+        mochi.GetComponent<Renderer>().sortingOrder = UpdateSortingOrder() + 1;
         SkeletonAnimation skel = transform.Find("Mochies").GetComponent<SkeletonAnimation>();
         skel.AnimationState.SetAnimation(0, MainChar.GetMochiDeliverAnimation(), true);
 

@@ -9,7 +9,7 @@ public class ZSortedObject : MonoBehaviour
         UpdateSortingOrder();
     }
     
-    protected void UpdateSortingOrder()
+    protected int UpdateSortingOrder()
     {
         if(Renderers == null)
             Renderers = GetComponentsInChildren<Renderer>();
@@ -19,5 +19,7 @@ public class ZSortedObject : MonoBehaviour
         {
             renderer.sortingOrder = order;
         }
+
+        return order;
     }
 }
