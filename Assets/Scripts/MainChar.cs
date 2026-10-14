@@ -46,7 +46,7 @@ public class MainChar : MonoBehaviour
     InputAction interactAction;
 
     Vector2 Movement = Vector2.zero;
-    Vector2 NormalizedMovement = Vector2.zero;
+    string PreviousDirectionAnim = "ch_3_4_front_right";
 
     SkeletonAnimation CharacterAnim;
     string CurrentAnimationName;
@@ -68,9 +68,8 @@ public class MainChar : MonoBehaviour
 
     void Update()
     {
-        NormalizedMovement = moveAction.ReadValue<Vector2>();
-        Movement = NormalizedMovement * Time.deltaTime * MovementSpeed;
-        transform.Translate(Movement);
+        Movement = moveAction.ReadValue<Vector2>() * MovementSpeed;
+        transform.Translate(Movement * Time.deltaTime);
 
         if (jumpAction.WasPressedThisFrame() || attackAction.WasPressedThisFrame() || interactAction.WasPressedThisFrame())
         {
@@ -189,24 +188,32 @@ public class MainChar : MonoBehaviour
     {
         string direction;
 
-        if(NormalizedMovement.x > 0.25f && NormalizedMovement.y > 0.25f) // arriba derecha
-            direction = "ch_3_4_back_right";
-        else if(NormalizedMovement.x > 0.75f) // derecha
-            direction = "ch_side_right";
-        else if(NormalizedMovement.x > 0.25f && NormalizedMovement.y < -0.25f) // abajo derecha
-            direction = "ch_3_4_front_right";
-        else if(NormalizedMovement.y > 0.75f) // arriba
-            direction = "ch_back";
-        // else if(movement.x == 0 && movement.y == 0)
-            // direction = "???";
-        else if(NormalizedMovement.y < -0.75f) // abajo
-            direction = "ch_front";
-        else if(NormalizedMovement.x < -0.25f && NormalizedMovement.y > 0.25f) // arriba izquierda
-            direction = "ch_3_4_back_left";
-        else if(NormalizedMovement.x < -0.75f) // izquierda
-            direction = "ch_side_left";
-        else // if(movement.x < 0.25f && movement.y < 0.25f) // abajo izquierda
-            direction = "ch_3_4_front_left";
+        if (Movement.magnitude / MovementSpeed < 0.2f)
+        {
+            direction = PreviousDirectionAnim;
+        }
+        else
+        {
+            Vector2 normalizedMovement = Movement.normalized;
+            if (normalizedMovement.x > 0.25f && normalizedMovement.y > 0.25f) // arriba derecha
+                direction = "ch_3_4_back_right";
+            else if (normalizedMovement.x > 0.75f) // derecha
+                direction = "ch_side_right";
+            else if (normalizedMovement.x > 0.25f && normalizedMovement.y < -0.25f) // abajo derecha
+                direction = "ch_3_4_front_right";
+            else if (normalizedMovement.y > 0.75f) // arriba
+                direction = "ch_back";
+            else if (normalizedMovement.y < -0.75f) // abajo
+                direction = "ch_front";
+            else if (normalizedMovement.x < -0.25f && normalizedMovement.y > 0.25f) // arriba izquierda
+                direction = "ch_3_4_back_left";
+            else if (normalizedMovement.x < -0.75f) // izquierda
+                direction = "ch_side_left";
+            else // if(movement.x < 0.25f && movement.y < 0.25f) // abajo izquierda
+                direction = "ch_3_4_front_left";
+
+            PreviousDirectionAnim = direction;
+        }
 
         return "ch_idle_empty/" + direction;
     }
