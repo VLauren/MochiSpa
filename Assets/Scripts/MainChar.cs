@@ -45,7 +45,11 @@ public class MainChar : MonoBehaviour
     InputAction attackAction;
     InputAction interactAction;
 
-    Vector2 movement = Vector2.zero;
+    Vector2 Movement = Vector2.zero;
+    Vector2 NormalizedMovement = Vector2.zero;
+
+    SkeletonAnimation CharacterAnim;
+    string CurrentAnimationName;
 
     void Awake()
     {
@@ -58,12 +62,15 @@ public class MainChar : MonoBehaviour
         jumpAction = InputSystem.actions.FindAction("Jump");
         attackAction = InputSystem.actions.FindAction("Attack");
         interactAction = InputSystem.actions.FindAction("Interact");
+
+        CharacterAnim = Instance.transform.Find("CharacterSpine").GetComponent<SkeletonAnimation>();
     }
+
     void Update()
     {
-        movement = moveAction.ReadValue<Vector2>();
-        movement *= Time.deltaTime * MovementSpeed;
-        transform.Translate(movement);
+        NormalizedMovement = moveAction.ReadValue<Vector2>();
+        Movement = NormalizedMovement * Time.deltaTime * MovementSpeed;
+        transform.Translate(Movement);
 
         if (jumpAction.WasPressedThisFrame() || attackAction.WasPressedThisFrame() || interactAction.WasPressedThisFrame())
         {
@@ -72,6 +79,13 @@ public class MainChar : MonoBehaviour
         }
 
         Instance.UpdateMochiAnimation();
+
+        string targetAnimName = GetCharacterAnimationName();
+        if(!targetAnimName.Equals(CurrentAnimationName))
+        {
+            CharacterAnim.AnimationState.SetAnimation(0, targetAnimName, true);
+            CurrentAnimationName = targetAnimName;
+        }
     }
 
     public static PlayerState GetPlayerState()
@@ -142,7 +156,7 @@ public class MainChar : MonoBehaviour
     string GetMochiAnimationName (bool _forceIdle = false)
     {
         string type = MochiState == MochiState.Beans ? "Fills_" : "Mochis_";
-        string move = (!_forceIdle && movement.sqrMagnitude > 0) ? "run/Run" : "idle/Idle";
+        string move = (!_forceIdle && Movement.sqrMagnitude > 0) ? "run/Run" : "idle/Idle";
 
         string state;
         if (MochiState == MochiState.Beans)
@@ -169,5 +183,31 @@ public class MainChar : MonoBehaviour
             colour = "_yellow";
 
         return type + move + state + colour;
+    }
+
+    string GetCharacterAnimationName()
+    {
+        string direction;
+
+        if(NormalizedMovement.x > 0.25f && NormalizedMovement.y > 0.25f) // arriba derecha
+            direction = "ch_3_4_back_right";
+        else if(NormalizedMovement.x > 0.75f) // derecha
+            direction = "ch_side_right";
+        else if(NormalizedMovement.x > 0.25f && NormalizedMovement.y < -0.25f) // abajo derecha
+            direction = "ch_3_4_front_right";
+        else if(NormalizedMovement.y > 0.75f) // arriba
+            direction = "ch_back";
+        // else if(movement.x == 0 && movement.y == 0)
+            // direction = "???";
+        else if(NormalizedMovement.y < -0.75f) // abajo
+            direction = "ch_front";
+        else if(NormalizedMovement.x < -0.25f && NormalizedMovement.y > 0.25f) // arriba izquierda
+            direction = "ch_3_4_back_left";
+        else if(NormalizedMovement.x < -0.75f) // izquierda
+            direction = "ch_side_left";
+        else // if(movement.x < 0.25f && movement.y < 0.25f) // abajo izquierda
+            direction = "ch_3_4_front_left";
+
+        return "ch_idle_empty/" + direction;
     }
 }

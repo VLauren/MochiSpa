@@ -32,7 +32,7 @@ public class RollStation : Interactable
 
             Anim.AnimationState.SetAnimation(0, "Station_roller/Stn_roll_full", false);
         }
-        else if(CurrentState == States.Full)
+        else if(CurrentState == States.Full && MainChar.GetPlayerState() == PlayerState.Normal)
         {
             CurrentState = States.Working;
 
@@ -68,7 +68,7 @@ public class RollStation : Interactable
     {
         Anim.AnimationState.SetAnimation(0, "Station_roller/Stn_roll_working", false);
 
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(1);
 
         CurrentState = States.Flat;
         Anim.AnimationState.SetAnimation(0, "Station_roller/Stn_roll_finish", false);
