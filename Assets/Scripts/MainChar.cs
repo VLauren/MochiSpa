@@ -182,7 +182,7 @@ public class MainChar : ZSortedObject
             state = "_round_grilled";
 
         string colour;
-        if (MochiColour == MochiColour.Regular || MochiState == MochiState.Dough || MochiState == MochiState.Beans)
+        if (MochiColour == MochiColour.Regular || MochiState == MochiState.Dough || MochiState == MochiState.Beans || MochiState == MochiState.Circles || MochiState == MochiState.Triangles)
             colour = "";
         else if (MochiColour == MochiColour.Blue)
             colour = "_blue";
