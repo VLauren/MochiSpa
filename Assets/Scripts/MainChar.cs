@@ -17,7 +17,9 @@ public enum MochiState
     Freezed,
     Grilled,
     Fill,
-    Beans
+    Beans,
+    Circles,
+    Triangles
 }
 
 public enum MochiColour
@@ -159,12 +161,16 @@ public class MainChar : ZSortedObject
 
     string GetMochiAnimationName (bool _forceIdle = false)
     {
-        string type = MochiState == MochiState.Beans ? "Fills_" : "Mochis_";
+        string type = MochiState == MochiState.Beans || MochiState == MochiState.Circles || MochiState == MochiState.Triangles ? "Fills_" : "Mochis_";
         string move = (!_forceIdle && Movement.sqrMagnitude > 0) ? "run/Run" : "idle/Idle";
 
         string state;
         if (MochiState == MochiState.Beans)
             state = "_fill_beans";
+        else if (MochiState == MochiState.Circles)
+            state = "_fill_round";
+        else if (MochiState == MochiState.Triangles)
+            state = "_fill_triangle";
         else if (MochiState == MochiState.Dough)
             state = "_dough";
         else if (MochiState == MochiState.Round)
